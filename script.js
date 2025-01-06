@@ -1,5 +1,3 @@
-var midiOutput;
-
 const SCALEDEG_OPTIONS = {
     easy: [
         { note: 0, label: "1" },
@@ -38,16 +36,9 @@ function randInt(n) {
 }
 
 function playSequence(sequence) {
-    const currentTime = performance.now();
-
     for (let event of sequence) {
-        const noteOnTime = currentTime + event.st;
-        const noteOffTime = noteOnTime + event.du;
-
-        // Note on (144 = 0x90 for channel 1)
-        midiOutput.send([0x90, event.nt, 127], noteOnTime);
-        // Note off (128 = 0x80 for channel 1)
-        midiOutput.send([0x80, event.nt, 0], noteOffTime);
+        MIDI.noteOn(0, event.nt, 127, event.st);
+        MIDI.noteOff(0, event.nt, event.st + event.du);
     }
 }
 
@@ -136,15 +127,15 @@ function generateProblem() {
 
         const beginNote = 48 + randInt(24);
         let seq, dur;
-        if (settings.scaleEstab == 'up') [seq, dur] = majorScaleUp(beginNote, 250);
-        else if (settings.scaleEstab == 'down') [seq, dur] = majorScaleDown(beginNote, 250);
-        else if (settings.scaleEstab == 'up-down') [seq, dur] = majorScaleUpDown(beginNote, 250);
-        else if (settings.scaleEstab == 'triads') [seq, dur] = majorTriads(beginNote, 500);
-        else[seq, dur] = [[{ nt: beginNote, st: 0, du: 500 }], 500];
+        if (settings.scaleEstab == 'up') [seq, dur] = majorScaleUp(beginNote, .250);
+        else if (settings.scaleEstab == 'down') [seq, dur] = majorScaleDown(beginNote, .250);
+        else if (settings.scaleEstab == 'up-down') [seq, dur] = majorScaleUpDown(beginNote, .250);
+        else if (settings.scaleEstab == 'triads') [seq, dur] = majorTriads(beginNote, .500);
+        else[seq, dur] = [[{ nt: beginNote, st: 0, du: .500 }], .500];
 
         seq[seq.length] = {
             nt: beginNote + SCALEDEG_OPTIONS[settings.scaledegType][ans].note,
-            st: dur + 250, du: 1000
+            st: dur + .250, du: 1.000
         };
 
         return { sequence: seq, ans: ans };
@@ -175,31 +166,11 @@ $('.nav-item').click(() => {
 });
 
 $(() => {
-    // MIDI Access successful
-    function onMIDISuccess(midiAccess) {
-        const outputs = Array.from(midiAccess.outputs.values());
-
-        if (outputs.length === 0) {
-            console.error("No MIDI outputs available.");
-            return;
-        }
-
-        // Select the first available MIDI output
-        midiOutput = outputs[0];
-        console.log("Using MIDI output:", midiOutput.name);
-    }
-
-    // MIDI Access failure
-    function onMIDIFailure(error) {
-        console.error("Failed to access MIDI devices:", error);
-    }
-
-    // Check if the Web MIDI API is supported
-    if (navigator.requestMIDIAccess) {
-        console.log("Web MIDI API is supported.");
-        navigator.requestMIDIAccess()
-            .then(onMIDISuccess, onMIDIFailure);
-    } else {
-        console.error("Web MIDI API is not supported in this browser.");
-    }
+    MIDI.loadPlugin({
+      soundfontUrl: "./soundfont/",
+      instrument: "acoustic_grand_piano",
+      onprogress: function (state, progress) {
+        console.log(state, progress);
+      }
+    });
 });
