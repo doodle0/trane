@@ -185,7 +185,7 @@ function onProblemStart() {
     $('#problem-heading').html(getProblemHeading());
 
     $('#ctl-btn-group').append(
-        $('<button type="button" class="btn btn-secondary me-1">다시 듣기</button>')
+        $('<button type="button" class="btn btn-outline-primary me-1">다시 듣기</button>')
             .click(() => { playSequence(problem.sequence); })
     );
 
@@ -213,18 +213,21 @@ function onAnswerClick(e) {
     if ($(e.target).attr('ans')) {
         $(e.target).removeClass('btn-outline-dark');
         $(e.target).addClass('btn-success');
+
+        // 정답 시 모든 버튼 비활성화
+        $('#ans-btn-group button').prop('disabled', true);
+
         $('#problem-heading').html('<strong>정답입니다!<strong>');
 
         // 다음 문제 버튼 추가
-        if ($('#ctl-btn-group').children().filter('#next-prob').length == 0) {
-            $('#ctl-btn-group').append(
-                $('<button type="button" class="btn btn-primary me-1" id="next-prob">다음 문제</button>')
-                    .click(() => { onProblemStart(); })
-            );
-        }
+        $('#ctl-btn-group').append(
+            $('<button type="button" class="btn btn-primary me-1" id="next-prob">다음 문제</button>')
+                .click(() => { onProblemStart(); })
+        );
     } else {
         $(e.target).removeClass('btn-outline-dark');
-        $(e.target).addClass('btn-danger');
+        $(e.target).addClass('btn-outline-danger');
+        $(e.target).prop('disabled', true);
     }
 }
 
