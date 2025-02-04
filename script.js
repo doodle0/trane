@@ -69,7 +69,12 @@ DATA = {
             { note: [0, 4, 7, 10], label: "도미넌트 7" },
             { note: [0, 3, 6, 9], label: "디미니시드 7" },
             { note: [0, 3, 6, 10], label: "하프 디미니시드 7" },
-        ]
+        ],
+        scopes: {
+            'maj-min-dom': [0, 1, 2],
+            'dim': [3, 4],
+            'all': [0, 1, 2, 3, 4]
+        }
     }
 };
 
@@ -91,7 +96,8 @@ function getProblemHeading() {
             return `${what} 재생된 이후 음이 하나 재생됩니다. 소리를 듣고 마지막으로 들린 음의 음도를 고르세요.`;
         },
         'interval': () => "소리를 듣고 음정을 고르세요.",
-        'triad': () => "소리를 듣고 3화음의 종류를 고르세요."
+        'triad': () => "소리를 듣고 3화음의 종류를 고르세요.",
+        'seventh': () => "소리를 듣고 7화음의 종류를 고르세요.",
     }[settings.trainingType];
 };
 
@@ -150,6 +156,22 @@ const generateProblem = {
             'down': () => arpeggioDown(chordToPlay, baseNote, .500),
             'simul': () => chord(chordToPlay, baseNote, 0, 1.000)
         }[settings.triadPlayOrder]();
+
+        return { sequence: seq, ans: ans };
+    },
+
+    // 7화음
+    'seventh': (scope) => {
+        const baseNote = 48 + randInt(24);
+        const ans = randInt(scope.length);
+
+        const chordToPlay = DATA.seventh.options[scope[ans]].note;
+
+        const [seq, _] = {
+            'up': () => arpeggioUp(chordToPlay, baseNote, .500),
+            'down': () => arpeggioDown(chordToPlay, baseNote, .500),
+            'simul': () => chord(chordToPlay, baseNote, 0, 1.000)
+        }[settings.seventhPlayOrder]();
 
         return { sequence: seq, ans: ans };
     }
@@ -239,6 +261,9 @@ $('#btn-start-interval').click(() => {
 });
 $('#btn-start-triad').click(() => {
     onTrainingStart('triad');
+});
+$('#btn-start-seventh').click(() => {
+    onTrainingStart('seventh');
 });
 $('#form-triadScope').change(() => {
     if ($('#form-triadScope').val() == 'maj-min') {

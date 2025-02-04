@@ -160,9 +160,28 @@
       </div>
 
       <!-- 7화음 -->
-      <div class="tab-pane fade" id="seventh-tab-pane" role="tabpanel" tabindex="0">
-        <div class="alert alert-info" role="alert">
-          Coming soon!
+      <div class="card my-3 tab-pane fade" id="seventh-tab-pane" role="tabpanel" tabindex="0">
+        <div class="card-header">설정</div>
+        <div class="card-body">
+          <div class="mb-3">
+            <label for="form-seventhPlayOrder" class="form-label">코드 들려주기</label>
+            <select id="form-seventhPlayOrder" class="form-select">
+              <option value="simul">한꺼번에</option>
+              <option value="up">낮은음→높은음</option>
+              <option value="down">높은음→낮은음</option>
+            </select>
+            <div class="form-text">7화음을 들려주는 방법을 설정합니다.</div>
+          </div>
+          <div class="mb-3">
+            <label for="form-seventhScope" class="form-label">코드 종류</label>
+            <select id="form-seventhScope" class="form-select">
+              <option value="maj-min-dom">Δ7, m7, 7</option>
+              <option value="dim">o7, ø7</option>
+              <option value="all">모두</option>
+            </select>
+            <div class="form-text">물어볼 7화음 종류의 범위를 설정합니다.</div>
+          </div>
+          <button class="btn btn-primary" id="btn-start-seventh">시작하기</button>
         </div>
       </div>
     </div>
